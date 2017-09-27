@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="tcmalloc">
+      <UniqueIdentifier>{5f727ebb-ee2d-4339-8c41-dabac4dee157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tcmalloc\base">
+      <UniqueIdentifier>{21e5a78b-3a01-4b92-aff8-6cdf91d91913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tcmalloc\windows">
+      <UniqueIdentifier>{d2f44806-6b76-4852-bbfb-921f63d3e014}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\central_freelist.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\fake_stacktrace_scope.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internal_logging.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\malloc_extension.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\page_heap.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sampler.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\span.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stack_trace_table.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stacktrace.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\static_vars.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tcmalloc.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\thread_cache.cc">
+      <Filter>tcmalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\dynamic_annotations.c">
+      <Filter>tcmalloc\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\logging.cc">
+      <Filter>tcmalloc\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\spinlock.cc">
+      <Filter>tcmalloc\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\spinlock_internal.cc">
+      <Filter>tcmalloc\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\sysinfo.cc">
+      <Filter>tcmalloc\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\windows\port.cc">
+      <Filter>tcmalloc\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\windows\system-alloc.cc">
+      <Filter>tcmalloc\windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

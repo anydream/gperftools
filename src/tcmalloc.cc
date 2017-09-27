@@ -1263,7 +1263,7 @@ static void* do_malloc_pages(ThreadCache* heap, size_t size) {
   return result;
 }
 
-ATTRIBUTE_ALWAYS_INLINE inline void* do_malloc(size_t size) {
+ATTRIBUTE_ALWAYS_INLINE void* do_malloc(size_t size) {
   if (PREDICT_FALSE(ThreadCache::IsUseEmergencyMalloc())) {
     return tcmalloc::EmergencyMalloc(size);
   }
@@ -1293,7 +1293,7 @@ static void *retry_malloc(void* size) {
   return do_malloc(reinterpret_cast<size_t>(size));
 }
 
-ATTRIBUTE_ALWAYS_INLINE inline void* do_malloc_or_cpp_alloc(size_t size) {
+ATTRIBUTE_ALWAYS_INLINE void* do_malloc_or_cpp_alloc(size_t size) {
   void *rv = do_malloc(size);
   if (PREDICT_TRUE(rv != NULL)) {
     return rv;
@@ -1302,7 +1302,7 @@ ATTRIBUTE_ALWAYS_INLINE inline void* do_malloc_or_cpp_alloc(size_t size) {
                     false, true);
 }
 
-ATTRIBUTE_ALWAYS_INLINE inline void* do_calloc(size_t n, size_t elem_size) {
+ATTRIBUTE_ALWAYS_INLINE void* do_calloc(size_t n, size_t elem_size) {
   // Overflow check
   const size_t size = n * elem_size;
   if (elem_size != 0 && size / elem_size != n) return NULL;
@@ -1338,7 +1338,7 @@ static ATTRIBUTE_NOINLINE void do_free_pages(Span* span, void* ptr) {
 //
 // We can usually detect the case where ptr is not pointing to a page that
 // tcmalloc is using, and in those cases we invoke invalid_free_fn.
-ATTRIBUTE_ALWAYS_INLINE inline
+ATTRIBUTE_ALWAYS_INLINE
 void do_free_with_callback(void* ptr,
                            void (*invalid_free_fn)(void*),
                            bool use_hint, size_t size_hint) {
@@ -1407,7 +1407,7 @@ void do_free_with_callback(void* ptr,
 }
 
 // The default "do_free" that uses the default callback.
-ATTRIBUTE_ALWAYS_INLINE inline void do_free(void* ptr) {
+ATTRIBUTE_ALWAYS_INLINE void do_free(void* ptr) {
   return do_free_with_callback(ptr, &InvalidFree, false, 0);
 }
 
@@ -1442,7 +1442,7 @@ inline size_t GetSizeWithCallback(const void* ptr,
 
 // This lets you call back to a given function pointer if ptr is invalid.
 // It is used primarily by windows code which wants a specialized callback.
-ATTRIBUTE_ALWAYS_INLINE inline void* do_realloc_with_callback(
+ATTRIBUTE_ALWAYS_INLINE void* do_realloc_with_callback(
     void* old_ptr, size_t new_size,
     void (*invalid_free_fn)(void*),
     size_t (*invalid_get_size_fn)(const void*)) {
@@ -1487,7 +1487,7 @@ ATTRIBUTE_ALWAYS_INLINE inline void* do_realloc_with_callback(
   }
 }
 
-ATTRIBUTE_ALWAYS_INLINE inline void* do_realloc(void* old_ptr, size_t new_size) {
+ATTRIBUTE_ALWAYS_INLINE void* do_realloc(void* old_ptr, size_t new_size) {
   return do_realloc_with_callback(old_ptr, new_size,
                                   &InvalidFree, &InvalidGetSizeForRealloc);
 }
@@ -1686,7 +1686,7 @@ void* malloc_oom(size_t size) {
 // Note that this is under tcmalloc namespace so that pprof
 // can automatically filter it out of growthz/heapz profiles.
 template <void* OOMHandler(size_t)>
-ATTRIBUTE_ALWAYS_INLINE inline
+ATTRIBUTE_ALWAYS_INLINE
 static void* do_allocate_full(size_t size) {
   void* p = do_malloc(size);
   if (PREDICT_FALSE(p == NULL)) {
@@ -1725,7 +1725,7 @@ AF(malloc_oom)
 // comprehension. Which itself led to elimination of various checks
 // that were not necessary for fast-path.
 template <void* AllocateFull(size_t)>
-ATTRIBUTE_ALWAYS_INLINE inline
+ATTRIBUTE_ALWAYS_INLINE
 static void * malloc_fast_path(size_t size) {
   /*if (PREDICT_FALSE(!base::internal::new_hooks_.empty())) {
     return AllocateFull(size);
