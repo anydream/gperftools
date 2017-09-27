@@ -97,7 +97,7 @@ extern "C" PERFTOOLS_DLL_DECL void WriteToStderr(const char* buf, int len) {
 // if it's not already there (that is, even if __declspec(thread) is not used).
 // Force a reference to p_thread_callback_tcmalloc and p_process_term_tcmalloc
 // to prevent whole program optimization from discarding the variables.
-#ifdef _MSC_VER
+/*#ifdef _MSC_VER
 #if defined(_M_IX86)
 #pragma comment(linker, "/INCLUDE:__tls_used")
 #pragma comment(linker, "/INCLUDE:_p_thread_callback_tcmalloc")
@@ -108,7 +108,7 @@ extern "C" PERFTOOLS_DLL_DECL void WriteToStderr(const char* buf, int len) {
 #pragma comment(linker, "/INCLUDE:p_process_term_tcmalloc")
 #endif
 #endif
-
+*/
 // When destr_fn eventually runs, it's supposed to take as its
 // argument the tls-value associated with key that pthread_key_create
 // creates.  (Yeah, it sounds confusing but it's really not.)  We
@@ -144,7 +144,7 @@ static void NTAPI on_tls_callback(HINSTANCE h, DWORD dwReason, PVOID pv) {
 }
 
 #ifdef _MSC_VER
-
+/*
 // extern "C" suppresses C++ name mangling so we know the symbol names
 // for the linker /INCLUDE:symbol pragmas above.
 extern "C" {
@@ -157,7 +157,7 @@ void (NTAPI *p_thread_callback_tcmalloc)(
 int (*p_process_term_tcmalloc)(void) = on_process_term;
 #pragma data_seg(pop, old_seg)
 }  // extern "C"
-
+*/
 #else  // #ifdef _MSC_VER  [probably msys/mingw]
 
 // We have to try the DllMain solution here, because we can't use the

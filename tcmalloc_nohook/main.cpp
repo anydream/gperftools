@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <thread>
 
 #if 1
 #include <gperftools/tcmalloc.h>
@@ -12,17 +13,20 @@
 #define FREE	free
 #endif
 
-int main()
+static int g_AllocSize = 0;
+static void PerfProc()
 {
-	const char checkbuf[256] = { 1, 2, 3, 4 };
+	char *checkbuf = (char*)alloca(g_AllocSize);
+	for (int i = 0; i < g_AllocSize; ++i)
+		checkbuf[i] = (char)(rand() % 256);
 
 	auto stt = clock();
 	size_t loops = 0;
 	for (;;)
 	{
-		void *p = ALLOC(sizeof(checkbuf));
-		memcpy(p, checkbuf, sizeof(checkbuf));
-		if (memcmp(p, checkbuf, sizeof(checkbuf)) != 0)
+		void *p = ALLOC(g_AllocSize);
+		memcpy(p, checkbuf, g_AllocSize);
+		if (memcmp(p, checkbuf, g_AllocSize) != 0)
 		{
 			printf("Fail!\n");
 			break;
@@ -35,6 +39,17 @@ int main()
 			break;
 	}
 	printf("Loops: %u\n", loops);
+}
+
+int main()
+{
+	printf("Input size: ");
+	scanf("%d", &g_AllocSize);
+
+	std::thread thd1(&PerfProc);
+	std::thread thd2(&PerfProc);
+	thd1.join();
+	thd2.join();
 	getchar();
 	return 0;
 }
