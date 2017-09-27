@@ -123,10 +123,10 @@
 #include "base/googleinit.h"
 #include "base/logging.h"
 #include "base/low_level_alloc.h"
-#include "malloc_hook-inl.h"
+//#include "malloc_hook-inl.h"
 
 #include <gperftools/stacktrace.h>
-#include <gperftools/malloc_hook.h>
+//#include <gperftools/malloc_hook.h>
 
 // MREMAP_FIXED is a linux extension.  How it's used in this file,
 // setting it to 0 is equivalent to saying, "This feature isn't

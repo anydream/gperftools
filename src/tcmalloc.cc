@@ -115,7 +115,7 @@
 #include <vector>                       // for vector
 
 #include <gperftools/malloc_extension.h>
-#include <gperftools/malloc_hook.h>         // for MallocHook
+//#include <gperftools/malloc_hook.h>         // for MallocHook
 #include <gperftools/nallocx.h>
 #include "base/basictypes.h"            // for int64
 #include "base/commandlineflags.h"      // for RegisterFlagValidator, etc
@@ -125,7 +125,7 @@
 #include "common.h"            // for StackTrace, kPageShift, etc
 #include "internal_logging.h"  // for ASSERT, TCMalloc_Printer, etc
 #include "linked_list.h"       // for SLL_SetNext
-#include "malloc_hook-inl.h"       // for MallocHook::InvokeNewHook, etc
+//#include "malloc_hook-inl.h"       // for MallocHook::InvokeNewHook, etc
 #include "page_heap.h"         // for PageHeap, PageHeap::Stats
 #include "page_heap_allocator.h"  // for PageHeapAllocator
 #include "span.h"              // for Span, DLL_Prepend, etc
@@ -1001,7 +1001,7 @@ size_t TCMallocImplementation::GetEstimatedAllocatedSize(size_t size) {
 static int tcmallocguard_refcount = 0;  // no lock needed: runs before main()
 TCMallocGuard::TCMallocGuard() {
   if (tcmallocguard_refcount++ == 0) {
-    ReplaceSystemAlloc();    // defined in libc_override_*.h
+    //ReplaceSystemAlloc();    // defined in libc_override_*.h
     tc_free(tc_malloc(1));
     ThreadCache::InitTSD();
     tc_free(tc_malloc(1));
@@ -1471,9 +1471,9 @@ ATTRIBUTE_ALWAYS_INLINE inline void* do_realloc_with_callback(
     if (PREDICT_FALSE(new_ptr == NULL)) {
       return NULL;
     }
-    MallocHook::InvokeNewHook(new_ptr, new_size);
+    //MallocHook::InvokeNewHook(new_ptr, new_size);
     memcpy(new_ptr, old_ptr, ((old_size < new_size) ? old_size : new_size));
-    MallocHook::InvokeDeleteHook(old_ptr);
+    //MallocHook::InvokeDeleteHook(old_ptr);
     // We could use a variant of do_free() that leverages the fact
     // that we already know the sizeclass of old_ptr.  The benefit
     // would be small, so don't bother.
@@ -1481,8 +1481,8 @@ ATTRIBUTE_ALWAYS_INLINE inline void* do_realloc_with_callback(
     return new_ptr;
   } else {
     // We still need to call hooks to report the updated size:
-    MallocHook::InvokeDeleteHook(old_ptr);
-    MallocHook::InvokeNewHook(old_ptr, new_size);
+    //MallocHook::InvokeDeleteHook(old_ptr);
+    //MallocHook::InvokeNewHook(old_ptr, new_size);
     return old_ptr;
   }
 }
@@ -1655,7 +1655,7 @@ namespace tcmalloc {
 
 static ATTRIBUTE_SECTION(google_malloc)
 void invoke_hooks_and_free(void *ptr) {
-  MallocHook::InvokeDeleteHook(ptr);
+  //MallocHook::InvokeDeleteHook(ptr);
   do_free(ptr);
 }
 
@@ -1692,7 +1692,7 @@ static void* do_allocate_full(size_t size) {
   if (PREDICT_FALSE(p == NULL)) {
     p = OOMHandler(size);
   }
-  MallocHook::InvokeNewHook(p, size);
+  //MallocHook::InvokeNewHook(p, size);
   return CheckedMallocResult(p);
 }
 
@@ -1727,9 +1727,9 @@ AF(malloc_oom)
 template <void* AllocateFull(size_t)>
 ATTRIBUTE_ALWAYS_INLINE inline
 static void * malloc_fast_path(size_t size) {
-  if (PREDICT_FALSE(!base::internal::new_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::new_hooks_.empty())) {
     return AllocateFull(size);
-  }
+  }*/
 
   ThreadCache *cache = ThreadCache::GetFastPathCache();
 
@@ -1758,19 +1758,19 @@ void* tc_malloc(size_t size) PERFTOOLS_NOTHROW {
 
 extern "C" PERFTOOLS_DLL_DECL CACHELINE_ALIGNED_FN
 void tc_free(void* ptr) PERFTOOLS_NOTHROW {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(ptr);
     return;
-  }
+  }*/
   do_free(ptr);
 }
 
 extern "C" PERFTOOLS_DLL_DECL CACHELINE_ALIGNED_FN
 void tc_free_sized(void *ptr, size_t size) PERFTOOLS_NOTHROW {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(ptr);
     return;
-  }
+  }*/
 #ifndef NO_TCMALLOC_SAMPLES
   // if ptr is kPageSize-aligned, then it could be sampled allocation,
   // thus we don't trust hint and just do plain free. It also handles
@@ -1811,7 +1811,7 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_calloc(size_t n,
     return tcmalloc::EmergencyCalloc(n, elem_size);
   }
   void* result = do_calloc(n, elem_size);
-  MallocHook::InvokeNewHook(result, n * elem_size);
+  //MallocHook::InvokeNewHook(result, n * elem_size);
   return result;
 }
 
@@ -1820,10 +1820,10 @@ extern "C" PERFTOOLS_DLL_DECL void tc_cfree(void* ptr) PERFTOOLS_NOTHROW
 TC_ALIAS(tc_free);
 #else
 {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(ptr);
     return;
-  }
+  }*/
   do_free(ptr);
 }
 #endif
@@ -1832,11 +1832,11 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_realloc(void* old_ptr,
                                                size_t new_size) PERFTOOLS_NOTHROW {
   if (old_ptr == NULL) {
     void* result = do_malloc_or_cpp_alloc(new_size);
-    MallocHook::InvokeNewHook(result, new_size);
+    //MallocHook::InvokeNewHook(result, new_size);
     return result;
   }
   if (new_size == 0) {
-    MallocHook::InvokeDeleteHook(old_ptr);
+    //MallocHook::InvokeDeleteHook(old_ptr);
     do_free(old_ptr);
     return NULL;
   }
@@ -1861,10 +1861,10 @@ extern "C" PERFTOOLS_DLL_DECL void tc_delete(void* p) PERFTOOLS_NOTHROW
 TC_ALIAS(tc_free);
 #else
 {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(p);
     return;
-  }
+  }*/
   do_free(p);
 }
 #endif
@@ -1877,10 +1877,10 @@ extern "C" PERFTOOLS_DLL_DECL void tc_delete_nothrow(void* p, const std::nothrow
 TC_ALIAS(tc_free);
 #else
 {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(p);
     return;
-  }
+  }*/
   do_free(p);
 }
 #endif
@@ -1909,10 +1909,10 @@ extern "C" PERFTOOLS_DLL_DECL void tc_deletearray(void* p) PERFTOOLS_NOTHROW
 TC_ALIAS(tc_free);
 #else
 {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(p);
     return;
-  }
+  }*/
   do_free(p);
 }
 #endif
@@ -1922,10 +1922,10 @@ extern "C" PERFTOOLS_DLL_DECL void tc_deletearray_nothrow(void* p, const std::no
 TC_ALIAS(tc_free);
 #else
 {
-  if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
+  /*if (PREDICT_FALSE(!base::internal::delete_hooks_.empty())) {
     tcmalloc::invoke_hooks_and_free(p);
     return;
-  }
+  }*/
   do_free(p);
 }
 #endif
@@ -1933,7 +1933,7 @@ TC_ALIAS(tc_free);
 extern "C" PERFTOOLS_DLL_DECL void* tc_memalign(size_t align,
                                                 size_t size) PERFTOOLS_NOTHROW {
   void* result = do_memalign_or_cpp_memalign(align, size);
-  MallocHook::InvokeNewHook(result, size);
+  //MallocHook::InvokeNewHook(result, size);
   return result;
 }
 
@@ -1946,7 +1946,7 @@ extern "C" PERFTOOLS_DLL_DECL int tc_posix_memalign(
   }
 
   void* result = do_memalign_or_cpp_memalign(align, size);
-  MallocHook::InvokeNewHook(result, size);
+  //MallocHook::InvokeNewHook(result, size);
   if (PREDICT_FALSE(result == NULL)) {
     return ENOMEM;
   } else {
@@ -1961,7 +1961,7 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_valloc(size_t size) PERFTOOLS_NOTHROW {
   // Allocate page-aligned object of length >= size bytes
   if (pagesize == 0) pagesize = getpagesize();
   void* result = do_memalign_or_cpp_memalign(pagesize, size);
-  MallocHook::InvokeNewHook(result, size);
+  //MallocHook::InvokeNewHook(result, size);
   return result;
 }
 
@@ -1973,7 +1973,7 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_pvalloc(size_t size) PERFTOOLS_NOTHROW {
   }
   size = (size + pagesize - 1) & ~(pagesize - 1);
   void* result = do_memalign_or_cpp_memalign(pagesize, size);
-  MallocHook::InvokeNewHook(result, size);
+  //MallocHook::InvokeNewHook(result, size);
   return result;
 }
 
@@ -1997,7 +1997,7 @@ extern "C" PERFTOOLS_DLL_DECL size_t tc_malloc_size(void* ptr) PERFTOOLS_NOTHROW
 
 extern "C" PERFTOOLS_DLL_DECL void* tc_malloc_skip_new_handler(size_t size)  PERFTOOLS_NOTHROW {
   void* result = do_malloc(size);
-  MallocHook::InvokeNewHook(result, size);
+  //MallocHook::InvokeNewHook(result, size);
   return result;
 }
 

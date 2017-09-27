@@ -38,8 +38,8 @@
 #include "base/dynamic_annotations.h"
 #include "base/spinlock.h"
 #include "base/logging.h"
-#include "malloc_hook-inl.h"
-#include <gperftools/malloc_hook.h>
+//#include "malloc_hook-inl.h"
+//#include <gperftools/malloc_hook.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
