@@ -35,6 +35,6 @@ int main()
 			break;
 	}
 	printf("Loops: %u\n", loops);
-
+	getchar();
 	return 0;
 }
