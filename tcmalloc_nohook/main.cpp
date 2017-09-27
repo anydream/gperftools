@@ -51,5 +51,6 @@ int main()
 	thd1.join();
 	thd2.join();
 	getchar();
+	getchar();
 	return 0;
 }
